@@ -1,6 +1,6 @@
 services:
   - type: worker
-    name: news-bot
+    name: news_bot_discord_only
     runtime: python
     plan: free
     autoDeploy: true
