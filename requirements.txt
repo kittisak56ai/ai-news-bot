@@ -1,6 +1,7 @@
 feedparser
-googletrans==4.0.0-rc1
+deep-translator
 transformers
+torch
 gtts
 pillow
 requests
