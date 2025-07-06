@@ -1,7 +1,5 @@
-
-
 import feedparser
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from transformers import pipeline
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
@@ -36,14 +34,13 @@ KEYWORDS = [
 ]
 
 sent_links = set()
-
-translator = Translator()
+translator = GoogleTranslator(source='auto', target='th')
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 def summarize_and_translate(content):
     try:
         summary = summarizer(content, max_length=250, min_length=80, do_sample=False)[0]['summary_text']
-        return translator.translate(summary, dest='th').text
+        return translator.translate(summary)
     except:
         return content[:300]
 
@@ -114,7 +111,7 @@ def run_news_bot_loop(interval_seconds=60):
             if not any(kw in text_to_check for kw in KEYWORDS):
                 continue
 
-            title_th = translator.translate(title, dest='th').text
+            title_th = translator.translate(title)
             summary_th = summarize_and_translate(content)
 
             full_text = (
@@ -126,9 +123,6 @@ def run_news_bot_loop(interval_seconds=60):
 
             create_image(title_th, summary_th)
             create_voice(summary_th)
-            # Discord webhook ไม่รองรับส่งไฟล์ง่าย ๆ ต้องใช้ bot หรือ API เพิ่มเติม
-            # ที่นี่ส่งแค่ข้อความอย่างเดียวก่อน
-
             send_discord(full_text)
             sent_links.add(link)
             print(f"📨 ส่งข่าวใหม่ในหมวด {cat}: {title}")
@@ -137,5 +131,3 @@ def run_news_bot_loop(interval_seconds=60):
 
 if __name__ == "__main__":
     run_news_bot_loop(interval_seconds=60)
-
-
